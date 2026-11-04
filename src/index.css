@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+
+  /* ---------- 颜色 ---------- */
+  /* 画布：柔和浅灰蓝；卡片：纯白 */
+  --color-canvas: #f4f6fb;
+  --color-hairline: #eceff5;
+  --color-hairline-strong: #e1e6f0;
+
+  /* 文字层级：标题深灰 / 正文中灰 / 辅助浅灰 */
+  --color-ink: #1b2130;
+  --color-ink-soft: #4b5563;
+  --color-ink-muted: #9aa4b4;
+
+  /* ---------- 圆角 ---------- */
+  --radius-card: 16px;
+  --radius-control: 12px;
+
+  /* ---------- 阴影：柔和扩散，不用生硬黑边 ---------- */
+  --shadow-card: 0 4px 12px rgba(17, 24, 39, 0.05);
+  --shadow-lift: 0 14px 32px -16px rgba(17, 24, 39, 0.24);
+  --shadow-float: 0 18px 48px -20px rgba(17, 24, 39, 0.28);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-ink-soft);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background-color: #dbeafe;
+}
+
+/* ---------- 通用卡片：白底 + 极浅描边 + 柔和阴影 + 大圆角 ---------- */
+@utility card {
+  border-radius: var(--radius-card);
+  background-color: #ffffff;
+  border: 1px solid var(--color-hairline);
+  box-shadow: var(--shadow-card);
+}
+
+/* 可交互卡片：悬浮轻微上浮 + 阴影加深 */
+@utility card-hover {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+@utility card-hover-on {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--color-hairline-strong);
+}
+
+/* 胶囊标签 */
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* 细滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #dfe4ec;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #c7cfdb;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}

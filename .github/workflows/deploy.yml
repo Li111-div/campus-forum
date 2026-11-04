@@ -1,0 +1,84 @@
+name: Deploy to GitHub Pages
+
+# 静态站点：构建产物只有 index.html + js + css，不需要任何后端进程。
+# 数据库 / 认证 / 实时推送都在 Supabase 云上，所以这里只负责把 dist 发到 Pages。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # 支持在 Actions 页面手动触发
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个部署，新提交会取消排队中的旧任务
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建（注入 Supabase / 图床 配置）
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_IMGBB_API_KEY: ${{ secrets.VITE_IMGBB_API_KEY }}
+        run: npm run build
+
+      # 没配 Secrets 时 vite build 依然「成功」，只是打出一个连不上数据库的废包。
+      # 这里做硬校验：产物里必须有 supabase 域名 + anon key（JWT 或新的 sb_publishable_ 前缀），
+      # 不合格就让部署失败，而不是上线一个白屏站点。
+      - name: 校验构建产物里确实带了 Supabase 配置
+        run: |
+          set -e
+          BUNDLE=$(ls dist/assets/*.js | head -n 1)
+          echo "检查产物：$BUNDLE"
+
+          if ! grep -q "supabase\.co" "$BUNDLE"; then
+            echo "::error::产物里没有 Supabase 域名。请到 Settings → Secrets and variables → Actions 配置 VITE_SUPABASE_URL 后重新运行。"
+            exit 1
+          fi
+
+          if ! grep -qE "eyJ[A-Za-z0-9_-]{10,}|sb_publishable_" "$BUNDLE"; then
+            echo "::error::产物里没有 anon key。请配置 VITE_SUPABASE_ANON_KEY 后重新运行。"
+            exit 1
+          fi
+
+          if grep -q "placeholder\.supabase\.co" "$BUNDLE"; then
+            echo "::error::产物里仍是占位地址，说明构建时没有注入真实配置。"
+            exit 1
+          fi
+
+          if ! grep -q "api\.imgbb\.com" "$BUNDLE"; then
+            echo "::warning::没有配置 VITE_IMGBB_API_KEY，站点可用但发帖不能上传图片。"
+          fi
+
+          echo "配置注入检查通过"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

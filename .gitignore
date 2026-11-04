@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.local
+.DS_Store
+.npm-cache
+*.tsbuildinfo
+.vite
+.shots
+.chrome-profile*
+.tmp
+/backups/
+seed-accounts.md
+*.log
+.valinit.mjs

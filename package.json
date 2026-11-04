@@ -1,0 +1,47 @@
+{
+  "name": "campus-forum",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "校园论坛（树洞）v1：React + TypeScript + Vite + Supabase",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lan": "vite build && vite preview",
+    "typecheck": "tsc --noEmit",
+    "db:apply": "node scripts/apply-db.mjs",
+    "db:migrate": "node scripts/apply-migrations.mjs",
+    "db:verify": "node scripts/verify-db.mjs",
+    "db:cleanup": "node scripts/cleanup-test-users.mjs",
+    "db:export": "node scripts/export-data.mjs",
+    "db:export:verify": "node scripts/export-data.mjs --verify",
+    "db:set-admin": "node scripts/set-admin.mjs",
+    "e2e:ui": "node scripts/e2e-ui.mjs",
+    "e2e:auth-gate": "node scripts/e2e-auth-gate.mjs",
+    "e2e:admin-report": "node scripts/e2e-admin-report.mjs",
+    "e2e:password": "node scripts/e2e-password.mjs",
+    "e2e:friends": "node scripts/e2e-friends.mjs",
+    "e2e:backup": "node scripts/e2e-backup.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "@tanstack/react-query": "^5.105.1",
+    "lucide-react": "^1.66.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5",
+    "sonner": "^2.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "pg": "^8.23.1",
+    "puppeteer-core": "^25.16.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.0",
+    "vite": "^8.3.5"
+  }
+}
