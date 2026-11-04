@@ -21,9 +21,9 @@ import {
 import { PostCard } from '../components/PostCard'
 import { EmptyState, ErrorState, Spinner } from '../components/ui'
 
-function PostSkeleton() {
+function PostSkeleton({ single }: { single: boolean }) {
   return (
-    <div className="animate-pulse card px-3.5 py-3.5 sm:px-4 sm:py-4">
+    <div className={`animate-pulse card ${single ? 'px-5 py-5' : 'px-3.5 py-3.5 sm:px-4 sm:py-4'}`}>
       <div className="h-3.5 w-14 rounded bg-slate-100" />
       <div className="mt-2.5 h-4 w-3/4 rounded bg-slate-100" />
       <div className="mt-2 h-3 w-full rounded bg-slate-50" />
@@ -36,18 +36,33 @@ function PostSkeleton() {
   )
 }
 
-/** 瀑布流的列数：手机 2、lg 3、xl 4（与之前断点一致） */
+/**
+ * 瀑布流的列数（按视口宽度）：
+ *   < 640   1 列（一条帖子独占一行）
+ *   ≥ 640   2 列
+ *   ≥ 1024  3 列
+ *   ≥ 1280  4 列
+ *   ≥ 1536  5 列
+ */
+const COLUMN_BREAKPOINTS = [
+  { min: 1536, columns: 5 },
+  { min: 1280, columns: 4 },
+  { min: 1024, columns: 3 },
+  { min: 640, columns: 2 },
+] as const
+
 function readColumnCount() {
-  if (typeof window === 'undefined') return 4
-  if (window.matchMedia('(min-width: 1280px)').matches) return 4
-  if (window.matchMedia('(min-width: 1024px)').matches) return 3
-  return 2
+  if (typeof window === 'undefined') return 1
+  for (const item of COLUMN_BREAKPOINTS) {
+    if (window.matchMedia(`(min-width: ${item.min}px)`).matches) return item.columns
+  }
+  return 1
 }
 
 function useColumnCount() {
   const [count, setCount] = useState(readColumnCount)
   useEffect(() => {
-    const queries = ['(min-width: 1280px)', '(min-width: 1024px)'].map((q) => window.matchMedia(q))
+    const queries = COLUMN_BREAKPOINTS.map((item) => window.matchMedia(`(min-width: ${item.min}px)`))
     const update = () => setCount(readColumnCount())
     for (const query of queries) query.addEventListener('change', update)
     update()
@@ -471,7 +486,7 @@ export default function HomePage() {
           {Array.from({ length: columnCount }).map((_, columnIndex) => (
             <div key={columnIndex} className="flex min-w-0 flex-1 flex-col gap-3 sm:gap-4">
               {Array.from({ length: 2 }).map((__, row) => (
-                <PostSkeleton key={row} />
+                <PostSkeleton key={row} single={columnCount === 1} />
               ))}
             </div>
           ))}
@@ -519,7 +534,7 @@ export default function HomePage() {
               {bucket.map((post) => (
                 <div key={post.id} data-post-card={post.id}>
                   <PostCard
-                    dense
+                    dense={columnCount > 1}
                     post={post}
                     boardName={boardName(post.board_slug)}
                     myVote={votes[post.id] ?? null}

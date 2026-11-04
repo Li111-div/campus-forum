@@ -57,14 +57,14 @@ function BoardSidebar({
   ]
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-5">
       <nav>
         <p className="px-3 text-[11px] font-semibold tracking-[0.08em] text-ink-muted">板块</p>
         <ul className="mt-2 space-y-1">
           <li>
             <Link
               to={boardLink(null)}
-              className={`flex items-center gap-2.5 rounded-control px-3 py-2 text-sm transition duration-150 ${
+              className={`flex items-center gap-2.5 rounded-control px-3 py-1.5 text-sm transition duration-150 ${
                 onHome && !activeBoard
                   ? 'nav-item-active bg-blue-50 font-medium text-blue-600'
                   : 'text-ink-soft hover:bg-slate-50 hover:text-blue-600'
@@ -81,7 +81,7 @@ function BoardSidebar({
               <li key={board.slug}>
                 <Link
                   to={boardLink(board.slug)}
-                  className={`flex items-center gap-2.5 rounded-control px-3 py-2 text-sm transition duration-150 ${
+                  className={`flex items-center gap-2.5 rounded-control px-3 py-1.5 text-sm transition duration-150 ${
                     active
                       ? `${meta.chip} nav-item-active font-medium`
                       : 'text-ink-soft hover:bg-slate-50 hover:text-blue-600'
@@ -104,7 +104,7 @@ function BoardSidebar({
               <NavLink
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-control px-3 py-2 text-sm transition duration-150 ${
+                  `flex items-center gap-2.5 rounded-control px-3 py-1.5 text-sm transition duration-150 ${
                     isActive
                       ? 'nav-item-active bg-blue-50 font-medium text-blue-600'
                       : 'text-ink-soft hover:bg-slate-50 hover:text-blue-600'
@@ -378,7 +378,7 @@ export function Layout() {
       {/* 白色外壳：顶栏与左侧导航同为白底，中间没有分割线 */}
       <div className="flex min-h-0 w-full flex-1 bg-white">
         {isAuthPage ? null : (
-          <aside className="hidden w-56 shrink-0 overflow-y-auto bg-white lg:block">
+          <aside className="no-scrollbar hidden w-56 shrink-0 overflow-y-auto bg-white lg:block">
             <div className="px-3 py-5">
               <BoardSidebar unread={unread} social={social} realtimeConnected={realtimeConnected} />
             </div>
