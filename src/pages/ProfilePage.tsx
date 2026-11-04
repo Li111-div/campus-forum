@@ -319,18 +319,26 @@ function ProfileCard({
   onChangePassword: () => void
 }) {
   return (
-    <section className="card p-5 sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <Avatar name={profile.display_name} avatar={profile.avatar} size="xl" />
+    <section className="card relative p-4 sm:p-6">
+      {/* 移动端：头像与昵称同一行；桌面端：头像更大、按钮靠右 */}
+      <div className="flex items-start gap-3 sm:gap-5">
+        <span className="sm:hidden">
+          <Avatar name={profile.display_name} avatar={profile.avatar} size="lg" />
+        </span>
+        <span className="hidden sm:inline-flex">
+          <Avatar name={profile.display_name} avatar={profile.avatar} size="xl" />
+        </span>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-[22px] font-bold tracking-tight text-ink">{profile.display_name}</h1>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <h1 className="text-lg font-bold tracking-tight text-ink sm:text-[22px]">
+              {profile.display_name}
+            </h1>
             <Badge tone={ROLE_TONE[profile.role]}>{ROLE_LABEL[profile.role]}</Badge>
             {isBanned ? <Badge tone="red">账号受限</Badge> : null}
           </div>
 
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
+          <div className="mt-1 flex flex-col gap-0.5 text-xs text-ink-muted sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3">
             {profile.username ? (
               <span className="inline-flex items-center gap-1">
                 <AtSign className="h-3.5 w-3.5" />
@@ -343,11 +351,7 @@ function ProfileCard({
             </span>
           </div>
 
-          <p className="mt-2 text-sm leading-[1.7] text-ink-soft">
-            {profile.bio || '这个人很神秘，还没有写简介。'}
-          </p>
-
-          <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-xs text-ink-muted">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-muted">
             <span>
               <span className="text-sm font-semibold text-slate-800">{followingCount ?? '—'}</span>{' '}
               关注
@@ -357,24 +361,31 @@ function ProfileCard({
               粉丝
             </span>
           </div>
-
-          {isBanned ? (
-            <div className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs leading-5 text-red-600">
-              账号当前处于受限状态
-              {profile.banned_reason ? `：${profile.banned_reason}` : ''}
-              ，暂时无法编辑资料或发帖。
-              {profile.banned_until ? `（到期时间：${formatDateTime(profile.banned_until)}）` : ''}
-            </div>
-          ) : null}
         </div>
+      </div>
 
+      {/* 简介独占一行，读起来更舒服 */}
+      <p className="mt-3 rounded-xl bg-slate-50/70 px-3 py-2 text-sm leading-6 text-ink-soft">
+        {profile.bio || '这个人很神秘，还没有写简介。'}
+      </p>
+
+      {isBanned ? (
+        <div className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs leading-5 text-red-600">
+          账号当前处于受限状态
+          {profile.banned_reason ? `：${profile.banned_reason}` : ''}
+          ，暂时无法编辑资料或发帖。
+          {profile.banned_until ? `（到期时间：${formatDateTime(profile.banned_until)}）` : ''}
+        </div>
+      ) : null}
+
+      <div className="mt-3 flex flex-col gap-2 sm:absolute sm:right-6 sm:top-6 sm:mt-0 sm:flex-row">
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onEdit}
             disabled={isBanned}
             title={isBanned ? '账号受限期间无法编辑资料' : '编辑资料'}
-            className={PRIMARY_BUTTON}
+            className={`${PRIMARY_BUTTON} flex-1 justify-center sm:flex-none`}
           >
             <Pencil className="h-4 w-4" />
             编辑资料
@@ -383,7 +394,7 @@ function ProfileCard({
             type="button"
             onClick={onChangePassword}
             title="修改登录密码"
-            className={SECONDARY_BUTTON}
+            className={`${SECONDARY_BUTTON} flex-1 justify-center sm:flex-none`}
           >
             <KeyRound className="h-4 w-4" />
             修改密码
@@ -702,13 +713,13 @@ export default function ProfilePage() {
       ) : null}
 
       <div className="card p-1">
-        <div className="flex gap-1 overflow-x-auto">
+        <div className="no-scrollbar flex gap-1 overflow-x-auto">
           {TABS.map((item) => (
             <button
               key={item.key}
               type="button"
               onClick={() => switchTab(item.key)}
-              className={`flex-1 whitespace-nowrap rounded-xl px-3 py-2 text-sm transition ${
+              className={`flex-1 whitespace-nowrap rounded-xl px-2 py-2 text-xs transition sm:px-3 sm:text-sm ${
                 tab === item.key
                   ? 'bg-blue-50 font-medium text-blue-600'
                   : 'text-ink-muted hover:bg-slate-50 hover:text-slate-700'

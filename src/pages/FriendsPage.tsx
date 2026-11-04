@@ -403,7 +403,7 @@ export default function FriendsPage() {
           </div>
         </div>
 
-        <div className="mt-4 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1">
+        <div className="no-scrollbar mt-4 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1">
           {tabs.map((item) => (
             <button
               key={item.key}
